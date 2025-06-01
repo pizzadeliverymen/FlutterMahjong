@@ -100,8 +100,8 @@ class MahjongGame {
     bool kongAble = kongList.isNotEmpty;
     List<TileSet> pungList = human.callPung(nextTile);
     bool pungAble = pungList.isNotEmpty;
-    List<TileSet> chowList = List.empty();
-    bool chowAble = false;
+    List<TileSet> chowList = human.callChow(nextTile);
+    bool chowAble = chowList.isNotEmpty;
     Meld? upgradablePung = human.upgradablePung(nextTile);
     bool upgradeAble = upgradablePung != null;
 

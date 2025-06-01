@@ -220,9 +220,10 @@ class Player {
     return meldList.first;
   }
 
-  // callChow(TileSet tile) {
-
-  // }
+  List<TileSet> callChow(TileSet tile) {
+    // TODO: Implement chow determination
+    return [];
+  }
 
   List<TileSet> callPung(TileSet tile) {
     var sameTiles = hand.where((item) => item == tile);
