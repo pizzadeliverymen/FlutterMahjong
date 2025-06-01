@@ -93,4 +93,31 @@ class Player {
     }
   }
 
+  pungToKong(Meld meld) {
+    shownMelds.removeWhere((item) => item.type == MeldType.kong && item.stolenTile == meld.stolenTile);
+    shownMelds.add(meld);
+  }
+
+  // callChow(TileSet tile) {
+
+  // }
+
+  callPung(TileSet tile) {
+    var sameTiles = hand.where((item) => item == tile);
+    if (sameTiles.length >= 2) {
+      return sameTiles;
+    } else {
+      return null;
+    }
+  }
+
+  callKong(tile) {
+    var sameTiles = hand.where((item) => item == tile);
+    if (sameTiles.length >= 3) {
+      return sameTiles;
+    } else {
+      return null;
+    }
+  }
+
 }
