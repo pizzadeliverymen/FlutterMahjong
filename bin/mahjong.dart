@@ -26,9 +26,9 @@ class MahjongGame {
     for (Player player in playerList) {
       player.sortHand();
     }
-    print(playerList[1].hand.map((o)=>o.name).join(","));
-    print(playerList[2].hand.map((o)=>o.name).join(","));
-    print(playerList[3].hand.map((o)=>o.name).join(","));
+    // print(playerList[1].hand.map((o)=>o.name).join(","));
+    // print(playerList[2].hand.map((o)=>o.name).join(","));
+    // print(playerList[3].hand.map((o)=>o.name).join(","));
   }
 
   void startGame() {
@@ -83,15 +83,24 @@ class MahjongGame {
     print(playerList[1].discards.map((o) => o.name).join(","));
     print(playerList[2].discards.map((o) => o.name).join(","));
     print(playerList[3].discards.map((o) => o.name).join(","));
-    String? answer = stdin.readLineSync()?.toLowerCase();
-    while (human.drawnTile?.name.toLowerCase() != answer && !human.hand.any((tile) => tile.name.toLowerCase() == answer)) {
-      print("$answer not found, try again");
-      answer = stdin.readLineSync()?.toLowerCase();
+    List<String> possibleAnswers = human.hand.map((tile) => tile.name.toLowerCase()).toList(growable: true);
+    if (human.drawnTile != null ) {
+      possibleAnswers.add(human.drawnTile!.name.toLowerCase());
     }
+    String? answer = _userAsk(possibleAnswers);
     TileSet discard = TileSet.values.firstWhere( (tile) => tile.name.toLowerCase() == answer!);
     human.discardTile(discard);
     print("tile has been found and removed");
     print(human);
+  }
+
+  String? _userAsk(List<String> possibleAnswers, {bool forceAnswer = true}) {
+    Player human = playerList[ PlayerDirection.down.index ];
+    String? answer = stdin.readLineSync()?.toLowerCase();
+    if (!possibleAnswers.contains(answer) && forceAnswer) {
+      return _userAsk(possibleAnswers);
+    }
+    return answer;
   }
   
   void checkHumanCalls(TileSet nextTile) {
@@ -106,16 +115,14 @@ class MahjongGame {
     bool upgradeAble = upgradablePung != null;
 
     List<String> options = [];
-    if (kongAble) options.add("'kong'");
-    if(upgradeAble) options.add("'upgrade' a pung");
-    if (pungAble) options.add("'pung'");
-    if (chowAble) options.add("'chow'");
+    if(upgradeAble) options.add("upgrade");
+    if (kongAble) options.add("kong");
+    if (pungAble) options.add("pung");
+    if (chowAble) options.add("chow");
     String question = "You can call ${options.join(",")}, or you can 'cancel'";
-    String? answer;
-    while (options.isNotEmpty && answer == null) {
-      print(question);
-      answer = stdin.readLineSync()?.toLowerCase();
-    }
+    print(question);
+    options.add("cancel");
+    String? answer = _userAsk(options, forceAnswer: false);
     if (answer == null) return;
     switch(answer) {
       case "upgrade":
