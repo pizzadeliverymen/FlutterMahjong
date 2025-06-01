@@ -2,6 +2,10 @@ enum PlayerDirection {
   down, left, up, right;
 }
 
+enum Difficulty {
+  unknowing, easy, medium, hard
+}
+
 extension PlayerDirectionExtension on PlayerDirection {
   PlayerDirection get next {
     final values = PlayerDirection.values;
@@ -72,8 +76,20 @@ enum TileSet {
   final TileSuit suit;
   final int rank;
 
+  bool get isHonor => suit == TileSuit.dragon || suit == TileSuit.wind;
+
+  bool get isTerminal => (rank == 1 || rank == 9) && !isHonor;
+
   static List<TileSet> get playableTiles {
     return TileSet.values.where( (tile) => tile.suit != TileSuit.blank).toList();
+  }
+
+  static Map<TileSet, int> frequencyCount(List<TileSet> tiles) {
+    final counts = <TileSet, int>{};
+    for (var tile in tiles) {
+      counts[tile] = (counts[tile] ?? 0) + 1;
+    }
+    return counts;
   }
 }
 
@@ -102,4 +118,16 @@ List<TileSet> testingDeck() {
     deck.add(TileSet.eastWind);
   }
   return deck;
+}
+
+List<TileSet> generateHand() {
+  List<TileSet> deck = List<TileSet>.empty(growable: true);
+  for (TileSet tile in TileSet.playableTiles) {
+    deck.add(tile);
+    deck.add(tile);
+    deck.add(tile);
+    deck.add(tile);
+  }
+  deck.shuffle();
+  return deck.sublist(0,13);
 }
