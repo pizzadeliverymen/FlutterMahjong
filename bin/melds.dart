@@ -42,7 +42,8 @@ class Meld {
 
   @override
   String toString() {
-    return "$type of ${tiles.join(", ")} : $stolenTile";
+    if (fromPung) return "Upgraded ${type.name} of ${tiles.map((o) => o.name).join(",")} : ${stolenTile.name}";
+    return "${type.name} of ${tiles.map((o) => o.name).join(",")} : ${stolenTile.name}";
   }
 }
 
