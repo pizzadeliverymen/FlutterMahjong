@@ -46,7 +46,7 @@ class MahjongGame {
       // ai turn
       // for now just discard the tile instantly
       var currentPlayer = playerList[ turn.index ];
-      currentPlayer.drawTile(nextTile);
+      currentPlayer.drawnTile = nextTile;
       currentPlayer.discardTile(nextTile);
       print("Player '${currentPlayer.name}' has discarded ${nextTile.name}");
       // do a chow/pung/kong check for everyone
@@ -69,7 +69,7 @@ class MahjongGame {
   
   void humanTurn(TileSet nextTile, bool draw) {
     Player human = playerList[ turn.index ];
-    if (draw) human.drawTile(nextTile);
+    if (draw) human.drawnTile = nextTile;
     if (human.canWin()) {
       print("YOU WON!!!");
       deck = [];
@@ -119,21 +119,21 @@ class MahjongGame {
     if (answer == null) return;
     switch(answer) {
       case "upgrade":
-        List<TileSet> meldTiles = upgradablePung!.tiles;
+        List<TileSet> meldTiles = upgradablePung!.tilesInHand;
         meldTiles.add(upgradablePung.stolenTile);
-        Meld meld = Meld(type: MeldType.kong, tiles: meldTiles, stolenTile: nextTile, direction: turn, fromPung: true);
+        Meld meld = Meld(type: MeldType.kong, tilesInHand: meldTiles, stolenTile: nextTile, direction: turn, fromPung: true);
         human.pungToKong(meld);
         turn = PlayerDirection.down;
         singleTurn(draw: false);
         break;
       case "kong":
-        Meld meld = Meld(type: MeldType.kong, tiles: kongList, stolenTile: nextTile, direction: turn);
+        Meld meld = Meld(type: MeldType.kong, tilesInHand: kongList, stolenTile: nextTile, direction: turn);
         human.addMeld(meld);
         turn = PlayerDirection.down;
         singleTurn(draw: false);
         break;
       case "pung":
-        Meld meld = Meld(type: MeldType.pung, tiles: pungList, stolenTile: nextTile, direction: turn);
+        Meld meld = Meld(type: MeldType.pung, tilesInHand: pungList, stolenTile: nextTile, direction: turn);
         human.addMeld(meld);
         turn = PlayerDirection.down;
         singleTurn(draw: false);

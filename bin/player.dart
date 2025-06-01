@@ -12,49 +12,44 @@ class Player {
   Player({
     required this.name,
     List<TileSet>? hand,
-    }) : hand = hand ?? [];
+  }) : hand = hand ?? [];
 
-  getName() {
-    return name;
-  }
 
-  getHand() {
-    return hand;
-  }
-
-  getHandSize() {
+  int getHandSize() {
     return hand.length;
   }
 
-  getTileCount() {
+  void clearHand() {
+    hand = [];
+  }
+
+  void forceMeld(Meld newMeld) {
+    shownMelds.add(newMeld);
+  }
+
+  void clearMelds() {
+    shownMelds = List<Meld>.empty();
+  }
+
+  int getTileCount() {
     var count = hand.length;
     count += drawnTile != null ? 1 : 0;
 
     for (Meld meld in shownMelds) {
-      if (meld.getType() == MeldType.chow || meld.getType() == MeldType.pung) {
+      if (meld.type == MeldType.chow || meld.type == MeldType.pung) {
         count += 3;
       } else {
-        count += 4;
+        // technically we dont count one of the tiles in pungs, so...
+        // count += 4;
+        count += 3;
       }
     }
 
     return count;
   }
 
-  sortHand() {
+  void sortHand() {
     hand.sort((a,b) => a.index.compareTo(b.index));
-  }
-
-  getDiscards() {
-    return discards;
-  }
-
-  getshownMelds() {
-    return shownMelds;
-  }
-
-  getDrawnTile() {
-    return drawnTile;
   }
 
   bool _canFormSets(Map<TileSet, int> tiles, int setsNeeded) {
@@ -116,14 +111,16 @@ class Player {
       counts[tile] = (counts[tile] ?? 0) + 1;
     }
     for (Meld meld in shownMelds) {
-      for (TileSet tile in meld.tiles) {
+      for (TileSet tile in meld.tilesInHand) {
         counts[tile] = (counts[tile] ?? 0) + 1;
       }
+      counts[meld.stolenTile] = (counts[meld.stolenTile] ?? 0) + 1;
     }
     if (additionalMeld != null) {
-      for (TileSet tile in additionalMeld.tiles) {
+      for (TileSet tile in additionalMeld.tilesInHand) {
         counts[tile] = (counts[tile] ?? 0) + 1;
       }
+      counts[additionalMeld.stolenTile] = (counts[additionalMeld.stolenTile] ?? 0) + 1;
     }
     if (drawnTile != null) counts[drawnTile!] = (counts[drawnTile] ?? 0) + 1;
     return counts;
@@ -172,16 +169,12 @@ class Player {
     return result;
   }
 
-  addToHand(TileSet newTile) {
+  void addToHand(TileSet newTile) {
     hand.add(newTile);
     sortHand();
   }
 
-  drawTile(TileSet newTile) {
-    drawnTile = newTile;
-  }
-
-  discardTile(TileSet tile) {
+  bool discardTile(TileSet tile) {
     if (drawnTile == tile) {
       drawnTile = null;
       discards.add(tile);
@@ -195,13 +188,14 @@ class Player {
         addToHand(drawnTile!);
       }
       drawnTile = null;
+      return true;
     }
+    return false;
   }
 
-
-  addMeld(Meld meld) {
-    print("Adding Meld $meld");
-    List<TileSet> removeFromHand = meld.tiles;
+  void addMeld(Meld meld) {
+    // print("Adding Meld $meld");
+    List<TileSet> removeFromHand = meld.tilesInHand;
     for (TileSet tile in removeFromHand) {
       hand.remove(tile);
     }
@@ -209,7 +203,7 @@ class Player {
     sortHand();
   }
 
-  pungToKong(Meld meld) {
+  void pungToKong(Meld meld) {
     shownMelds.removeWhere((item) => item.type == MeldType.pung && item.stolenTile == meld.stolenTile);
     shownMelds.add(meld);
   }
