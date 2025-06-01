@@ -42,7 +42,7 @@ class Meld {
 
   @override
   String toString() {
-    return "$type of ${tiles.join(", ")} : $stolenTile";;
+    return "$type of ${tiles.join(", ")} : $stolenTile";
   }
 }
 
