@@ -1,4 +1,4 @@
-import 'package:mahjong/utils.dart';
+import 'utils.dart';
 
 class Meld {
     
