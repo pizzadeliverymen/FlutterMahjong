@@ -1,7 +1,7 @@
 name: cli_mahjong
-description: A sample command-line application with basic argument parsing.
+description: A sample command-line mahjong game.
 version: 0.0.1
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/pizzadeliverymen/FlutterMahjong/tree/cli
 
 environment:
   sdk: ^3.7.2
