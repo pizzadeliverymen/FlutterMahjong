@@ -154,7 +154,7 @@ void main() {
 Player createWinningPlayer() {
   final Random random = Random();
   // get the entire list of every tile
-  final List<TileSet> allPossibleTiles = List.of(TileSet.values);
+  final List<TileSet> allPossibleTiles = List.of(TileSet.playableTiles);
   // shuffle them up
   allPossibleTiles.shuffle();
   // and take the first 5 to use in the winning hand
