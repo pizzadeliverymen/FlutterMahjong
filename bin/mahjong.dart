@@ -92,7 +92,6 @@ class MahjongGame {
   }
 
   String? _userAsk(List<String> possibleAnswers, {bool forceAnswer = true}) {
-    Player human = playerList[ PlayerDirection.down.index ];
     String? answer = stdin.readLineSync()?.toLowerCase();
     if (!possibleAnswers.contains(answer) && forceAnswer) {
       return _userAsk(possibleAnswers);
