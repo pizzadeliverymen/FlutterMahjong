@@ -67,7 +67,7 @@ class Player {
 
     // first tile available that has more than 0 copies
     TileSet? firstTile;
-    for (var tile in TileSet.values) {
+    for (var tile in TileSet.playableTiles) {
       if ((tiles[tile] ?? 0 ) > 0) {
         firstTile = tile;
         break;
@@ -104,12 +104,16 @@ class Player {
     return false;
   }
 
-  
-  Map<TileSet, int> _countFrequencies({Meld? additionalMeld}) {
+  Map<TileSet, int> _handFrequencies() {
     final counts = <TileSet, int>{};
     for (var tile in hand) {
       counts[tile] = (counts[tile] ?? 0) + 1;
     }
+    return counts;
+  }
+  
+  Map<TileSet, int> _countFrequencies({Meld? additionalMeld}) {
+    final counts = _handFrequencies();
     for (Meld meld in shownMelds) {
       for (TileSet tile in meld.tilesInHand) {
         counts[tile] = (counts[tile] ?? 0) + 1;

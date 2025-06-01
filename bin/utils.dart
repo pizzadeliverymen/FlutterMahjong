@@ -1,5 +1,5 @@
 enum PlayerDirection { 
-   down, left, up, right;
+  down, left, up, right;
 }
 
 extension PlayerDirectionExtension on PlayerDirection {
@@ -18,7 +18,7 @@ extension PlayerDirectionExtension on PlayerDirection {
 enum MeldType { chow, pung, kong }
 
 
-enum TileSuit { character, bamboo, pin, wind, dragon } 
+enum TileSuit { character, bamboo, pin, wind, dragon, blank } 
 enum TileSet {
   // Characters
   oneCharacter("🀇", TileSuit.character, 1),
@@ -62,19 +62,27 @@ enum TileSet {
   // Dragons
   whiteDragon("🀆", TileSuit.dragon, 1),
   greenDragon("🀅", TileSuit.dragon, 2),
-  redDragon("🀄︎", TileSuit.dragon, 3);
+  redDragon("🀄︎", TileSuit.dragon, 3),
+
+  // blank tile
+  tileBack("🀫", TileSuit.blank, 0);
 
   const TileSet(this.value, this.suit, this.rank);
   final String value;
   final TileSuit suit;
   final int rank;
+
+  static List<TileSet> get playableTiles {
+    return TileSet.values.where( (tile) => tile.suit != TileSuit.blank).toList();
+  }
 }
+
 
 
 
 List<TileSet> generateDeck() {
   List<TileSet> deck = List<TileSet>.empty(growable: true);
-  for (TileSet tile in TileSet.values) {
+  for (TileSet tile in TileSet.playableTiles) {
     deck.add(tile);
     deck.add(tile);
     deck.add(tile);
@@ -84,10 +92,10 @@ List<TileSet> generateDeck() {
   return deck;
 }
 
-
+// testing deck
 List<TileSet> testingDeck() {
   List<TileSet> deck = List<TileSet>.empty(growable: true);
-  for (var _ in TileSet.values) {
+  for (var _ in TileSet.playableTiles) {
     deck.add(TileSet.eastWind);
     deck.add(TileSet.eastWind);
     deck.add(TileSet.eastWind);

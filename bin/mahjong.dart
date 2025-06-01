@@ -76,22 +76,19 @@ class MahjongGame {
       return;
     }
     print("Your hand ${human.hand.map((o) => o.name).join(",")}");
-    print("Drawn Tile: $nextTile");
-    print("YourDiscards ${human.discards.map((o) => o.name).join(",")}");
+    print("Drawn Tile: ${nextTile.name}");
+    print("Your Discards: ${human.discards.map((o) => o.name).join(",")}");
     print("Which tile do you want to discard?");
     print("");
-    print(playerList[1].discards.map((o) => o.name).join(","));
-    print(playerList[2].discards.map((o) => o.name).join(","));
-    print(playerList[3].discards.map((o) => o.name).join(","));
     List<String> possibleAnswers = human.hand.map((tile) => tile.name.toLowerCase()).toList(growable: true);
     if (human.drawnTile != null ) {
       possibleAnswers.add(human.drawnTile!.name.toLowerCase());
     }
     String? answer = _userAsk(possibleAnswers);
-    TileSet discard = TileSet.values.firstWhere( (tile) => tile.name.toLowerCase() == answer!);
+    TileSet discard = TileSet.playableTiles.firstWhere( (tile) => tile.name.toLowerCase() == answer!);
     human.discardTile(discard);
-    print("tile has been found and removed");
-    print(human);
+    // print("tile has been found and removed");
+    // print(human);
   }
 
   String? _userAsk(List<String> possibleAnswers, {bool forceAnswer = true}) {
