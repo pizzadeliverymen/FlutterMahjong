@@ -266,8 +266,14 @@ class Player {
 
 class AiPlayer extends Player{
 
-  Difficulty diffLevel = Difficulty.unknowing;
-  AiPlayer({required super.name, Difficulty diffLevel = Difficulty.unknowing});
+
+  // Player({
+  //   required this.name,
+  //   List<TileSet>? hand,
+  // }) : _hand = hand ?? [];
+  late Difficulty diffLevel;
+  AiPlayer({required super.name, super.hand, this.diffLevel = Difficulty.unknowing});
+  AiPlayer.withHand({required super.name, required super.hand, this.diffLevel = Difficulty.unknowing});
 
 
 
@@ -309,7 +315,7 @@ class AiPlayer extends Player{
     }
     // and if we still dont have a good tile, we increase the cutoff and try again
     if (chosenTile == TileSet.tileBack) {
-      chosenTile = _leastValuable(cutoff: cutoff+1);
+      chosenTile = _leastValuable(cutoff: cutoff+1, discards: discards, melds: melds);
     }
 
     return chosenTile;
@@ -320,22 +326,22 @@ class AiPlayer extends Player{
     TileSet toDiscard = TileSet.tileBack;
     if (hand.isEmpty) return toDiscard;
     switch (diffLevel) {
-      case Difficulty.medium: {
+      case Difficulty.medium:
         /**
          * Medium will use discards/melds
          */
         toDiscard = _leastValuable(discards: previousDiscards);
         break;
-      }
-      case Difficulty.easy: {
+
+      case Difficulty.easy:
         /**
          * The second easiest will only check their own hand.
          */
-        toDiscard = _leastValuable();
+        toDiscard = _leastValuable(discards: discards, melds: shownMelds);
         break;
-      }
+
       case Difficulty.unknowing:
-      default: {
+      default:
         // the simplest ai will just discard the drawn tile if possible, otherwise it will just discard the first tile in its hand
         if (drawnTile != null) {
           toDiscard = drawnTile!;
@@ -343,7 +349,6 @@ class AiPlayer extends Player{
           toDiscard = hand.last;
         }
         break;
-      }
     }
     // discardTile(toDiscard);
     return toDiscard;

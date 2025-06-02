@@ -1,5 +1,6 @@
 
 import 'package:test/test.dart';
+import '../bin/melds.dart';
 import '../bin/player.dart';
 import '../bin/utils.dart';
 
@@ -50,6 +51,184 @@ void main() {
   });
 
 
+  group('Easy Level AI', () {
+    // as an easy ai, steve should only take into account his own discards/shown tiles
+
+    final easyHand = [
+      TileSet.redDragon, TileSet.redDragon, TileSet.redDragon,
+      TileSet.nineBamboo, TileSet.nineBamboo,
+      TileSet.eastWind,TileSet.eastWind,
+      TileSet.oneBamboo,
+      TileSet.fiveBamboo,
+      TileSet.westWind
+    ];
+    test("Only Hand", () {
+      AiPlayer easySteve = AiPlayer(name: "Easy Steve", diffLevel: Difficulty.easy);
+
+      /**
+       * The order of discards for this hand should be:
+       *  westWind->oneBamboo->fiveBamboo->eastWind->eastWind->nineBamboo->nineBamboo->redDragon...->tileBack
+       */
+      easySteve.hand = easyHand;
+      TileSet discardable;
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.westWind);
+      easySteve.discardTile(discardable);
+      
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.oneBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.fiveBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.eastWind);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.eastWind);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.nineBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.nineBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.tileBack);
+    });
+
+    test('What About Discards?', () {
+      List<TileSet> discard = [TileSet.nineBamboo, TileSet.nineBamboo];
+      // so the ai should discard ninebamboo first
+      AiPlayer easySteve = AiPlayer(name: "Easy Steve", diffLevel: Difficulty.easy);
+      easySteve.hand = easyHand;
+      easySteve.discards = discard;
+      /**
+       * The order of discards for this hand should be:
+       *  westWind->oneBamboo->fiveBamboo->nineBamboo->nineBamboo->eastWind->eastWind->redDragon...->tileBack
+       */
+
+      TileSet discardable;
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.westWind);
+      easySteve.discardTile(discardable);
+      
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.oneBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.fiveBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.nineBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.nineBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.eastWind);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.eastWind);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.tileBack);
+    });
+
+    test("Time For Melds", () {
+      AiPlayer easySteve = AiPlayer(name: "Easy Steve", diffLevel: Difficulty.easy);
+      easySteve.hand = easyHand;
+      easySteve.addToHand(TileSet.fiveBamboo);
+      easySteve.addToHand(TileSet.fiveBamboo);
+      
+      easySteve.addMeld(Meld(type: MeldType.pung, tilesInHand: [TileSet.fiveBamboo,TileSet.fiveBamboo], stolenTile: TileSet.fiveBamboo, direction: PlayerDirection.up));
+      // this means easysteve should have a 3 of a kind shown, but still have a fivebamboo in hand, which should cause it to be removed first
+      /**
+       * The order of discards for this hand should be:
+       *  fiveBamboo->westWind->oneBamboo->eastWind->eastWind->nineBamboo->nineBamboo->redDragon...->tileBack
+       */
+      TileSet discardable;
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.fiveBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.westWind);
+      easySteve.discardTile(discardable);
+      
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.oneBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.eastWind);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.eastWind);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.nineBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.nineBamboo);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.redDragon);
+      easySteve.discardTile(discardable);
+
+      discardable = easySteve.chooseDiscard();
+      expect(discardable, TileSet.tileBack);
+    });
+  });
 
   // this player should always return the drawn tile or the last tile
 }
