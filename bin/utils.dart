@@ -19,7 +19,7 @@ extension PlayerDirectionExtension on PlayerDirection {
   }
 }
 
-enum MeldType { chow, pung, kong }
+enum MeldType { chow, pung, kong, pair }
 
 
 enum TileSuit { character, bamboo, pin, wind, dragon, blank } 
@@ -84,6 +84,14 @@ enum TileSet {
     return TileSet.values.where( (tile) => tile.suit != TileSuit.blank).toList();
   }
 
+  static List<TileSet> get fullDeck {
+    List<TileSet> deck = playableTiles;
+    deck.addAll(playableTiles);
+    deck.addAll(playableTiles);
+    deck.addAll(playableTiles);
+    return deck;
+  }
+
   static Map<TileSet, int> frequencyCount(List<TileSet> tiles) {
     final counts = <TileSet, int>{};
     for (var tile in tiles) {
@@ -93,17 +101,8 @@ enum TileSet {
   }
 }
 
-
-
-
 List<TileSet> generateDeck() {
-  List<TileSet> deck = List<TileSet>.empty(growable: true);
-  for (TileSet tile in TileSet.playableTiles) {
-    deck.add(tile);
-    deck.add(tile);
-    deck.add(tile);
-    deck.add(tile);
-  }
+  List<TileSet> deck = TileSet.fullDeck;
   deck.shuffle();
   return deck;
 }
@@ -131,3 +130,4 @@ List<TileSet> generateHand() {
   deck.shuffle();
   return deck.sublist(0,13);
 }
+

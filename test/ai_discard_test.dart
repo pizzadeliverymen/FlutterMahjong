@@ -54,15 +54,16 @@ void main() {
   group('Easy Level AI', () {
     // as an easy ai, steve should only take into account his own discards/shown tiles
 
-    final easyHand = [
-      TileSet.redDragon, TileSet.redDragon, TileSet.redDragon,
-      TileSet.nineBamboo, TileSet.nineBamboo,
-      TileSet.eastWind,TileSet.eastWind,
-      TileSet.oneBamboo,
-      TileSet.fiveBamboo,
-      TileSet.westWind
-    ];
+    
     test("Only Hand", () {
+      final easyHand = [
+        TileSet.redDragon, TileSet.redDragon, TileSet.redDragon,
+        TileSet.nineBamboo, TileSet.nineBamboo,
+        TileSet.eastWind,TileSet.eastWind,
+        TileSet.oneBamboo,
+        TileSet.fiveBamboo,
+        TileSet.westWind
+      ];
       AiPlayer easySteve = AiPlayer(name: "Easy Steve", diffLevel: Difficulty.easy);
 
       /**
@@ -70,6 +71,8 @@ void main() {
        *  westWind->oneBamboo->fiveBamboo->eastWind->eastWind->nineBamboo->nineBamboo->redDragon...->tileBack
        */
       easySteve.hand = easyHand;
+      easySteve.clearMelds();
+      easySteve.discards = [];
       TileSet discardable;
       discardable = easySteve.chooseDiscard();
       expect(discardable, TileSet.westWind);
@@ -116,10 +119,20 @@ void main() {
     });
 
     test('What About Discards?', () {
+      final easyHand = [
+        TileSet.redDragon, TileSet.redDragon, TileSet.redDragon,
+        TileSet.nineBamboo, TileSet.nineBamboo,
+        TileSet.eastWind,TileSet.eastWind,
+        TileSet.oneBamboo,
+        TileSet.fiveBamboo,
+        TileSet.westWind
+      ];
       List<TileSet> discard = [TileSet.nineBamboo, TileSet.nineBamboo];
       // so the ai should discard ninebamboo first
       AiPlayer easySteve = AiPlayer(name: "Easy Steve", diffLevel: Difficulty.easy);
       easySteve.hand = easyHand;
+      easySteve.clearMelds();
+      easySteve.discards = [];
       easySteve.discards = discard;
       /**
        * The order of discards for this hand should be:
@@ -172,12 +185,22 @@ void main() {
     });
 
     test("Time For Melds", () {
-      AiPlayer easySteve = AiPlayer(name: "Easy Steve", diffLevel: Difficulty.easy);
-      easySteve.hand = easyHand;
-      easySteve.addToHand(TileSet.fiveBamboo);
-      easySteve.addToHand(TileSet.fiveBamboo);
+      final easyHand = [
+        TileSet.redDragon, TileSet.redDragon, TileSet.redDragon,
+        TileSet.nineBamboo, TileSet.nineBamboo,
+        TileSet.eastWind,TileSet.eastWind,
+        TileSet.oneBamboo,
+        TileSet.fiveBamboo,
+        TileSet.westWind
+      ];
+      AiPlayer steveEasy = AiPlayer(name: "Easy Steve", diffLevel: Difficulty.easy);
+      steveEasy.hand = easyHand;
+      steveEasy.clearMelds();
+      steveEasy.discards = [];
+      steveEasy.addToHand(TileSet.fiveBamboo);
+      steveEasy.addToHand(TileSet.fiveBamboo);
       
-      easySteve.addMeld(Meld(type: MeldType.pung, tilesInHand: [TileSet.fiveBamboo,TileSet.fiveBamboo], stolenTile: TileSet.fiveBamboo, direction: PlayerDirection.up));
+      steveEasy.addMeld(Meld(type: MeldType.pung, tilesInHand: [TileSet.fiveBamboo,TileSet.fiveBamboo], stolenTile: TileSet.fiveBamboo, direction: PlayerDirection.up));
       // this means easysteve should have a 3 of a kind shown, but still have a fivebamboo in hand, which should cause it to be removed first
       /**
        * The order of discards for this hand should be:
@@ -185,47 +208,47 @@ void main() {
        */
       TileSet discardable;
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.fiveBamboo);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.westWind);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
       
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.oneBamboo);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.eastWind);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.eastWind);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.nineBamboo);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.nineBamboo);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.redDragon);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.redDragon);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.redDragon);
-      easySteve.discardTile(discardable);
+      steveEasy.discardTile(discardable);
 
-      discardable = easySteve.chooseDiscard();
+      discardable = steveEasy.chooseDiscard();
       expect(discardable, TileSet.tileBack);
     });
   });

@@ -11,6 +11,7 @@ class MahjongGame {
   late PlayerDirection turn;
   List<Player> playerList = [];
   List<TileSet> deck = generateDeck();
+  List<TileSet> discardedTiles = [];
 
   // if ai and player can call at the same time, we add them to aiFight
   // the different difficulties change how long it takes the ai to call
@@ -58,7 +59,7 @@ class MahjongGame {
       return;
     }
     var nextTile = deck.removeLast();
-    if (turn == PlayerDirection.down && false) {
+    if (turn == PlayerDirection.down) {
       humanTurn(nextTile, draw);
     } else {
       // ai turn
@@ -67,28 +68,48 @@ class MahjongGame {
       TileSet discardedTile = currentPlayer.chooseDiscard();
       print("Player '${currentPlayer.name}' is discarding ${discardedTile.name}");
       currentPlayer.discardTile(discardedTile);
+      discardedTiles.add(discardedTile);
+      List<Meld?> playerMelds = [];
       // do a chow/pung/kong check for everyone
-      for (int i = 1; i < 4; i++) {
-        Player playerCheck = playerList[ (turn.index + i) % 4 ];
-        List<TileSet> kongList = playerCheck.callKong(discardedTile);
-        if (kongList.isNotEmpty) {
-          print("${playerCheck.name} can call a kong (and a pung) on ${discardedTile.name}");
-        } else if (playerCheck.callPung(discardedTile).isNotEmpty) {
-          print("${playerCheck.name} can call a pung on ${discardedTile.name}");
+      for (PlayerDirection dir in PlayerDirection.values) {
+        if (dir == PlayerDirection.down || dir == turn) {
+          // ignore for now
+          playerMelds[dir.index] = null;
+        } else {
+          playerMelds[dir.index] = (playerList[dir.index] as AiPlayer).decideCall(discardedTile);
         }
       }
-      // checkHumanCalls(discardedTile);
+      // for now let human go first
+      checkHumanCalls(discardedTile);
+      // if human doesnt call then first/fastest ai
+      if (discardedTiles.last == discardedTile){
+        aiMeldCall(playerMelds, discardedTile);
+      }
       await Future.delayed(Duration(milliseconds: 500));
     }
 
     turn = turn.next;
     singleTurn();
   }
+
+  void aiMeldCall(List<Meld?> playerMelds, TileSet discardedTile) {
+    for (PlayerDirection dir in PlayerDirection.values) {
+      if (playerMelds[dir.index] != null) {
+        // player will call this meld
+        Meld m = playerMelds[dir.index]!;
+        m.direction = turn;
+        (playerList[dir.index] as AiPlayer).addMeld(m);
+        print("${playerList[dir.index].name} has called ${m.type.name} on $discardedTile");
+        discardedTiles.removeLast();
+        break;
+      }
+    }
+  }
   
   void humanTurn(TileSet nextTile, bool draw) {
     Player human = playerList[ turn.index ];
     if (draw) human.drawnTile = nextTile;
-    if (human.canWin()) {
+    if (human.wonHand()) {
       print("YOU WON!!!");
       deck = [];
       return;
@@ -105,8 +126,7 @@ class MahjongGame {
     String? answer = _userAsk(possibleAnswers);
     TileSet discard = TileSet.playableTiles.firstWhere( (tile) => tile.name.toLowerCase() == answer!);
     human.discardTile(discard);
-    // print("tile has been found and removed");
-    // print(human);
+    discardedTiles.add(discard);
   }
 
   String? _userAsk(List<String> possibleAnswers, [bool forceAnswer = true, int timeOut = -1]) {
@@ -143,23 +163,26 @@ class MahjongGame {
     switch(answer) {
       case "upgrade":
         List<TileSet> meldTiles = upgradablePung!.tilesInHand;
-        meldTiles.add(upgradablePung.stolenTile);
+        meldTiles.add(upgradablePung.stolenTile!);
         Meld meld = Meld(type: MeldType.kong, tilesInHand: meldTiles, stolenTile: nextTile, direction: turn, fromPung: true);
         human.pungToKong(meld);
         turn = PlayerDirection.down;
         singleTurn(draw: false);
+        discardedTiles.removeLast();
         break;
       case "kong":
         Meld meld = Meld(type: MeldType.kong, tilesInHand: kongList, stolenTile: nextTile, direction: turn);
         human.addMeld(meld);
         turn = PlayerDirection.down;
         singleTurn(draw: false);
+        discardedTiles.removeLast();
         break;
       case "pung":
         Meld meld = Meld(type: MeldType.pung, tilesInHand: pungList, stolenTile: nextTile, direction: turn);
         human.addMeld(meld);
         turn = PlayerDirection.down;
         singleTurn(draw: false);
+        discardedTiles.removeLast();
         break;
       default:
         print("Not calling");

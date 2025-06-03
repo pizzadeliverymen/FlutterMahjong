@@ -33,40 +33,40 @@ void main() {
   group("Winning", () {
     test('Player should win with just their hand:', () {
       testPlayer.hand = winningHand1;
-      expect(testPlayer.canWin(), true);
+      expect(testPlayer.canWin().isNotEmpty, true);
     });
     test('Player should win with just their hand (1 Kong):', () {
       testPlayer.hand = winningHand2;
-      expect(testPlayer.canWin(), true);
+      expect(testPlayer.canWin().isNotEmpty, true);
     });
 
     test('Randomly Generated Players with winning hands:', () {
       Player randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
       randomPlayer = createWinningPlayer();
-      expect(randomPlayer.canWin(), true, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin().isNotEmpty, true, reason: randomPlayer.toString());
     }, tags: 'random');
   });
   
@@ -112,38 +112,38 @@ void main() {
   group("Losing", () {
     test('Player doesnt have enough tiles:', () {
       testPlayer.hand = losingHand1;
-      expect(testPlayer.canWin(), false);
+      expect(testPlayer.canWin(), []);
     });
     test('Player should lose with just their hand:', () {
       testPlayer.hand = losingHand2;
-      expect(testPlayer.canWin(), false);
+      expect(testPlayer.canWin(), []);
     });
     test('Player missing a meld:', () {
       testPlayer.hand = losingHand3;
-      expect(testPlayer.canWin(), false);
+      expect(testPlayer.canWin(), []);
     });
 
     test('Losing Through Missing Single Tile:', () {
       Player randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
       randomPlayer = createLosingPlayer();
-      expect(randomPlayer.canWin(), false, reason: randomPlayer.toString());
+      expect(randomPlayer.canWin(), [], reason: randomPlayer.toString());
     }, tags: 'random');
   });
   

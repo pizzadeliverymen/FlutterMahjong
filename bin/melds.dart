@@ -2,28 +2,65 @@ import 'utils.dart';
 
 class Meld {
     
-  MeldType type;
+  late MeldType type;
 
   List<TileSet> tilesInHand;
 
-  PlayerDirection direction;
+  late PlayerDirection? direction;
 
-  TileSet stolenTile;
+  TileSet? stolenTile;
 
-  bool fromPung;
+  late bool fromPung;
 
   Meld({
     required this.type,
     required this.tilesInHand,
     required this.stolenTile,
-    required this.direction,
+    this.direction,
     this.fromPung = false
   });
 
+
+  Meld.selfMeld({
+    required this.type,
+    required this.tilesInHand
+  }) {
+    stolenTile = null;
+    direction = PlayerDirection.down;
+    fromPung = false;
+  }
+
+  Meld.pairMeld({
+    required this.tilesInHand
+  }) {
+    type = MeldType.pair;
+    stolenTile = null;
+    direction = PlayerDirection.down;
+    fromPung = false;
+  }
+
+  Meld.pungMeld({
+    required this.tilesInHand
+  }) {
+    type = MeldType.pung;
+    stolenTile = null;
+    direction = PlayerDirection.down;
+    fromPung = false;
+  }
+
+  Meld.kongMeld({
+    required this.tilesInHand
+  }) {
+    type = MeldType.kong;
+    stolenTile = null;
+    direction = PlayerDirection.down;
+    fromPung = false;
+  }
+
   @override
   String toString() {
-    if (fromPung) return "Upgraded ${type.name} of ${tilesInHand.map((o) => o.name).join(",")} : ${stolenTile.name}";
-    return "${type.name} of ${tilesInHand.map((o) => o.name).join(",")} : ${stolenTile.name}";
+    if (fromPung) return "Upgraded ${type.name} of ${tilesInHand.map((o) => o.name).join(",")} : ${stolenTile?.name}";
+    return "${type.name} of ${tilesInHand.map((o) => o.name).join(",")} : ${stolenTile?.name}";
   }
 }
 
