@@ -12,13 +12,14 @@ class MahjongGame {
   List<Player> playerList = [];
   List<TileSet> deck = generateDeck();
   List<TileSet> discardedTiles = [];
+  bool human = true;
 
   // if ai and player can call at the same time, we add them to aiFight
   // the different difficulties change how long it takes the ai to call
   // ToDo: finish ai calling
   List<Player> aiFight = [];
 
-  MahjongGame({this.east = PlayerDirection.down, bool human = true}) {
+  MahjongGame({this.east = PlayerDirection.down, this.human = true}) {
     turn = east;
     if (human){
       var human = Player(name: "Human", hand: deck.take(13).toList());
@@ -26,7 +27,7 @@ class MahjongGame {
       human.sortHand();
       playerList.add(human);
     } else {
-      playerList.add(AiPlayer(name: "Down AI", hand: deck.take(13).toList(), diffLevel: Difficulty.easy));
+      playerList.add(AiPlayer(name: "Down AI", hand: deck.take(13).toList(), diffLevel: Difficulty.unknowing));
       deck.removeRange(0, 13);
     }
     playerList.add(AiPlayer(name: "Left AI", hand: deck.take(13).toList(), diffLevel: Difficulty.easy));
@@ -39,6 +40,7 @@ class MahjongGame {
     for (Player player in playerList) {
       player.sortHand();
     }
+    // print(playerList[0].hand.map((o)=>o.name).join(","));
     // print(playerList[1].hand.map((o)=>o.name).join(","));
     // print(playerList[2].hand.map((o)=>o.name).join(","));
     // print(playerList[3].hand.map((o)=>o.name).join(","));
@@ -59,12 +61,20 @@ class MahjongGame {
       return;
     }
     var nextTile = deck.removeLast();
-    if (turn == PlayerDirection.down) {
+    if (human && turn == PlayerDirection.down) {
       humanTurn(nextTile, draw);
     } else {
       // ai turn
       AiPlayer currentPlayer = playerList[ turn.index ] as AiPlayer;
-      currentPlayer.drawnTile = nextTile;
+      if (draw) {
+        currentPlayer.drawnTile = nextTile;
+      }
+      if (currentPlayer.wonHand()) {
+        print("Player ${currentPlayer.name} has won:\n$currentPlayer");
+        deck = [];
+        finishGame();
+        return;
+      }
       TileSet discardedTile = currentPlayer.chooseDiscard();
       print("Player '${currentPlayer.name}' is discarding ${discardedTile.name}");
       currentPlayer.discardTile(discardedTile);
@@ -72,20 +82,22 @@ class MahjongGame {
       List<Meld?> playerMelds = [];
       // do a chow/pung/kong check for everyone
       for (PlayerDirection dir in PlayerDirection.values) {
-        if (dir == PlayerDirection.down || dir == turn) {
+        if (( dir == PlayerDirection.down && human) || dir == turn) {
           // ignore for now
-          playerMelds[dir.index] = null;
+          playerMelds.add(null);
         } else {
-          playerMelds[dir.index] = (playerList[dir.index] as AiPlayer).decideCall(discardedTile);
+          playerMelds.add((playerList[dir.index] as AiPlayer).decideCall(discardedTile));
         }
       }
-      // for now let human go first
-      checkHumanCalls(discardedTile);
+      if (human) {
+        // for now let human go first
+        checkHumanCalls(discardedTile);
+      }
       // if human doesnt call then first/fastest ai
       if (discardedTiles.last == discardedTile){
         aiMeldCall(playerMelds, discardedTile);
       }
-      await Future.delayed(Duration(milliseconds: 500));
+      // await Future.delayed(Duration(milliseconds: 500));
     }
 
     turn = turn.next;
@@ -93,6 +105,7 @@ class MahjongGame {
   }
 
   void aiMeldCall(List<Meld?> playerMelds, TileSet discardedTile) {
+    // print(playerMelds);
     for (PlayerDirection dir in PlayerDirection.values) {
       if (playerMelds[dir.index] != null) {
         // player will call this meld
@@ -101,7 +114,9 @@ class MahjongGame {
         (playerList[dir.index] as AiPlayer).addMeld(m);
         print("${playerList[dir.index].name} has called ${m.type.name} on $discardedTile");
         discardedTiles.removeLast();
-        break;
+        turn = dir;
+        singleTurn(draw: false);
+        return;
       }
     }
   }
@@ -158,7 +173,7 @@ class MahjongGame {
     String question = "You can call ${options.join(",")}, or you can 'cancel'";
     print(question);
     options.add("cancel");
-    String? answer = _userAsk(options, false);
+    String? answer = _userAsk(options, false, 5);
     if (answer == null) return;
     switch(answer) {
       case "upgrade":
@@ -167,22 +182,22 @@ class MahjongGame {
         Meld meld = Meld(type: MeldType.kong, tilesInHand: meldTiles, stolenTile: nextTile, direction: turn, fromPung: true);
         human.pungToKong(meld);
         turn = PlayerDirection.down;
-        singleTurn(draw: false);
         discardedTiles.removeLast();
+        singleTurn(draw: false);
         break;
       case "kong":
         Meld meld = Meld(type: MeldType.kong, tilesInHand: kongList, stolenTile: nextTile, direction: turn);
         human.addMeld(meld);
         turn = PlayerDirection.down;
-        singleTurn(draw: false);
         discardedTiles.removeLast();
+        singleTurn(draw: false);
         break;
       case "pung":
         Meld meld = Meld(type: MeldType.pung, tilesInHand: pungList, stolenTile: nextTile, direction: turn);
         human.addMeld(meld);
         turn = PlayerDirection.down;
-        singleTurn(draw: false);
         discardedTiles.removeLast();
+        singleTurn(draw: false);
         break;
       default:
         print("Not calling");
@@ -191,14 +206,14 @@ class MahjongGame {
   
   void finishGame() {
     for (Player player in playerList) {
-      print(player.toString());
+      // print("${player.name} ${player.shownMelds.toString()}");
     }
   }
 }
 
 
 void main(List<String> args) {
-  MahjongGame game = MahjongGame(human: false);
+  MahjongGame game = MahjongGame(human: true);
   game.randomizeEast();
   game.startGame();
 }

@@ -102,7 +102,7 @@ enum TileSet {
 }
 
 List<TileSet> generateDeck() {
-  List<TileSet> deck = TileSet.fullDeck;
+  List<TileSet> deck = TileSet.fullDeck.toList(growable: true);
   deck.shuffle();
   return deck;
 }

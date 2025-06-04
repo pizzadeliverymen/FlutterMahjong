@@ -60,6 +60,7 @@ class Meld {
   @override
   String toString() {
     if (fromPung) return "Upgraded ${type.name} of ${tilesInHand.map((o) => o.name).join(",")} : ${stolenTile?.name}";
+    if (type == MeldType.pair) return "${type.name} of ${tilesInHand.map((o) => o.name).join(",")}";
     return "${type.name} of ${tilesInHand.map((o) => o.name).join(",")} : ${stolenTile?.name}";
   }
 }

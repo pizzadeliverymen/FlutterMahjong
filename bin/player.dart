@@ -81,7 +81,7 @@ class Player {
         }
       }
     }
-    return true;
+    return false;
   }
 
   @override
@@ -432,6 +432,18 @@ class AiPlayer extends Player{
     Meld potentialKong = Meld(type: MeldType.kong, tilesInHand: kongMelds, stolenTile: tile);
     Meld potentialPung = Meld(type: MeldType.pung, tilesInHand: pungMelds, stolenTile: tile);
     Meld potentialChow = Meld(type: MeldType.chow, tilesInHand: chowMelds, stolenTile: tile);
+    // easy and unknowing ai will basically always call if they have the chance
+    if ( diffLevel == Difficulty.unknowing || diffLevel == Difficulty.easy ) {
+      if (kongMelds.isNotEmpty) {
+        return potentialKong;
+      }
+      if (pungMelds.isNotEmpty) {
+        return potentialPung;
+      }
+      if (chowMelds.isNotEmpty) {
+        return potentialChow;
+      }
+    }
     // if a meld doesn't break a meld already in hand then we can call
     // kong -> pung -> chow
     List<Meld> inHandMeld = completeMeldsInHand();
